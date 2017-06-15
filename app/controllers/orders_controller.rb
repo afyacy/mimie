@@ -30,8 +30,15 @@ class OrdersController < ApplicationController
     Stripe.api_key = ENV["STRIPE_API_KEY"]
     token = params[:stripeToken]
 
+    customer = Stripe::Customer.create(
+    :email => params[:stripeEmail],
+    :source  => params[:stripeToken]
+  )
+
       begin
       charge = Stripe::Charge.create(
+        :customer => customer.id,
+        :source => params[:stripeToken],
         :amount => (@listing.price * 100).floor,
         :currency => "usd",
         :card => token
@@ -44,8 +51,9 @@ class OrdersController < ApplicationController
     transfer = Stripe::Transfer.create(
       :amount => (@listing.price * 95).floor,
       :currency => "usd",
-      :recipient => @seller.recipient
-      )
+      #:recipient => @seller.recipient,
+      :destination => "acct_1AUrQ3BggKrniqKQ",
+        )
 
     respond_to do |format|
       if @order.save
