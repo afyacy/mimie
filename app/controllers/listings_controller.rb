@@ -29,16 +29,33 @@ before_action :set_listing, only: [:show, :edit, :update, :destroy]
 
   # POST /listings
   # POST /listings.json
-  def create
+ def create
     @listing = Listing.new(listing_params)
     @listing.user_id = current_user.id
+
+    if current_user.recipient.blank?
+      Stripe.api_key = ENV["STRIPE_API_KEY"]
+      token = params[:stripeToken]
+
+     recipient = Stripe::Account.create(
+        :legal_entity => { :type => "company" },
+        :type => "custom", 
+        #:managed => true,
+        :country => 'US',
+        :email => current_user.email
+
+        )
+
+      current_user.recipient = recipient.id
+      current_user.save
+    end
 
     respond_to do |format|
       if @listing.save
         format.html { redirect_to @listing, notice: 'Listing was successfully created.' }
-        format.json { render :show, status: :created, location: @listing }
+        format.json { render action: 'show', status: :created, location: @listing }
       else
-        format.html { render :new }
+        format.html { render action: 'new' }
         format.json { render json: @listing.errors, status: :unprocessable_entity }
       end
     end
