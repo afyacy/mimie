@@ -37,4 +37,10 @@ Rails.application.configure do
 
    # Required for Devise gem
   config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+
+  #to raise an exception
+  config.action_mailer.raise_delivery_errors = true
+
+  
+
 end

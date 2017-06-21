@@ -1,5 +1,9 @@
 Etsydemo::Application.routes.draw do
   
+  get 'contact_form/new'
+
+  get 'contact_form/create'
+
   devise_for :users
   resources :listings do
     resources :orders, only: [:new, :create]
@@ -11,6 +15,7 @@ Etsydemo::Application.routes.draw do
   get 'sales' => "orders#sales"
   get 'purchases' => "orders#purchases"
 
+  resources :contact_forms
 
   root 'listings#index'
 
