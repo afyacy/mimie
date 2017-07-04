@@ -1,5 +1,7 @@
 Etsydemo::Application.routes.draw do
   
+  resources :categories
+
   get 'contact_form/new'
 
   get 'contact_form/create'

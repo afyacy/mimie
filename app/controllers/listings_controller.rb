@@ -5,12 +5,18 @@ before_action :set_listing, only: [:show, :edit, :update, :destroy]
 
   def seller
     @listings = Listing.where(user: current_user).order("created_at DESC")
+
   end
 
   # GET /listings
   # GET /listings.json
   def index
-    @listings = Listing.all.order("created_at DESC")
+    if params[:category].blank?
+      @listings = Listing.all.order("created_at DESC")
+    else 
+      @category_id = Category.find_by(name: params[:category]).id
+      @listings = Listing.where(category_id: @category_id).order("created_at DESC")
+    end
   end
 
   # GET /listings/1
@@ -104,7 +110,7 @@ def set_listing
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def listing_params
-      params.require(:listing).permit(:name, :description, :price, :image)
+      params.require(:listing).permit(:name, :description, :category_id, :price, :image)
     end
 
     def check_user
